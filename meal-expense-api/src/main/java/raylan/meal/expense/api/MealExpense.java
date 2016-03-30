@@ -8,7 +8,6 @@ import com.google.common.base.Preconditions;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.math.BigDecimal;
-import java.time.Instant;
 
 /**
  * Created by spetit on 29/03/2016.
@@ -16,7 +15,7 @@ import java.time.Instant;
 @Immutable
 @JsonDeserialize
 public final class MealExpense {
-    public final Instant date;
+    public final String date;
     public final BigDecimal amount;
 
 //    public MealExpense(Instant date, BigDecimal amount) {
@@ -25,7 +24,7 @@ public final class MealExpense {
 //    }
 
     @JsonCreator
-    public MealExpense(Instant date, BigDecimal amount) {
+    public MealExpense(String date, BigDecimal amount) {
         this.date = Preconditions.checkNotNull(date, "date");
         this.amount = Preconditions.checkNotNull(amount, "amount");
     }

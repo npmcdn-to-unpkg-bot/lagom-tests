@@ -18,13 +18,15 @@ public interface MealExpenseService extends Service {
     ServiceCall<NotUsed, MealExpense, NotUsed> addExpense();
 
     ServiceCall<String, NotUsed, PSequence<String>> getMonthExpenses();
+    ServiceCall<NotUsed, NotUsed, PSequence<String>> getAllExpenses();
 
     @Override
     default Descriptor descriptor() {
         // @formatter:off
-        return named("friendservice").with(
+        return named("mealExpenseService").with(
                 restCall(Method.GET, "/api/meal/expense/:year/:month", getMonthExpenses()),
-                restCall(Method.POST, "/api/meal/expense/:timestamp", addExpense())
+                restCall(Method.GET, "/api/meal/expenses", getAllExpenses()),
+                restCall(Method.POST, "/api/meal/expense", addExpense())
         ).withAutoAcl(true);
         // @formatter:on
     }

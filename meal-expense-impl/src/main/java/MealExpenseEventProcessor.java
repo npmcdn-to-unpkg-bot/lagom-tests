@@ -47,8 +47,8 @@ public class MealExpenseEventProcessor extends CassandraReadSideProcessor<MealEx
   private CompletionStage<Done> prepareCreateTables(CassandraSession session) {
     // @formatter:off
     return session.executeCreateTable(
-        "CREATE TABLE IF NOT EXISTS meal_expense ("
-          + "date timestamp, amount decimal, "
+        "CREATE TABLE IF NOT EXISTS meal_expense2 ("
+          + "date text, amount decimal, "
           + "PRIMARY KEY (date))")
             .thenCompose(a -> session.executeCreateTable(
                     "CREATE TABLE IF NOT EXISTS meal_expense_offset ("
@@ -61,7 +61,7 @@ public class MealExpenseEventProcessor extends CassandraReadSideProcessor<MealEx
   }
 
   private CompletionStage<Done> prepareWriteMealExpense(CassandraSession session) {
-    return session.prepare("INSERT INTO meal_expense (date, amount) VALUES (?, ?)").thenApply(ps -> {
+    return session.prepare("INSERT INTO meal_expense2 (date, amount) VALUES (?, ?)").thenApply(ps -> {
       setMealExpense(ps);
       return Done.getInstance();
     });
@@ -82,13 +82,14 @@ public class MealExpenseEventProcessor extends CassandraReadSideProcessor<MealEx
 
   @Override
   public EventHandlers defineEventHandlers(EventHandlersBuilder builder) {
-    builder.setEventHandler(MealExpenseEvent.MealExpenseCreated.class, this::processFriendChanged);
+    builder.setEventHandler(MealExpenseEvent.MealExpenseCreated.class, this::processMealEntityChanged);
     return builder.build();
   }
 
-  private CompletionStage<List<BoundStatement>> processFriendChanged(MealExpenseEvent.MealExpenseCreated event, UUID offset) {
+  private CompletionStage<List<BoundStatement>> processMealEntityChanged(MealExpenseEvent.MealExpenseCreated event, UUID offset) {
     BoundStatement bindWriteFollowers = writeFollowers.bind();
-    bindWriteFollowers.setTime("date", event.date.toEpochMilli());
+
+    bindWriteFollowers.setString("date", event.date);
     bindWriteFollowers.setDecimal("amount", event.amount);
     BoundStatement bindWriteOffset = writeOffset.bind(offset);
     return completedStatements(Arrays.asList(bindWriteFollowers, bindWriteOffset));

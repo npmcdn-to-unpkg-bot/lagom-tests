@@ -27,16 +27,16 @@ public interface MealExpenseEvent extends Jsonable, AggregateEvent<MealExpenseEv
   @Immutable
   @JsonDeserialize
   public class MealExpenseCreated implements MealExpenseEvent {
-    public final Instant date;
+    public final String date;
     public final BigDecimal amount;
     public final Instant timestamp;
 
-    public MealExpenseCreated(Instant date, BigDecimal amount) {
+    public MealExpenseCreated(String date, BigDecimal amount) {
       this(date, amount, Optional.empty());
     }
 
     @JsonCreator
-    private MealExpenseCreated(Instant date, BigDecimal amount, Optional<Instant> timestamp) {
+    private MealExpenseCreated(String date, BigDecimal amount, Optional<Instant> timestamp) {
       this.date = Preconditions.checkNotNull(date, "date");
       this.amount = Preconditions.checkNotNull(amount, "amount");
       this.timestamp = timestamp.orElseGet(() -> Instant.now());

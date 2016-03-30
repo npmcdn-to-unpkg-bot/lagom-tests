@@ -10,7 +10,6 @@ import raylan.meal.expense.api.MealExpense;
 import raylan.meal.expense.api.MealExpenseService;
 
 import javax.inject.Inject;
-import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
@@ -34,7 +33,7 @@ public class MealExpenseServiceImpl implements MealExpenseService {
         readSide.register(MealExpenseEventProcessor.class);
     }
 
-    private PersistentEntityRef<MealExpenseCommand> friendEntityRef(Instant date) {
+    private PersistentEntityRef<MealExpenseCommand> mealExpenseEntityRef(String date) {
         PersistentEntityRef<MealExpenseCommand> ref = persistentEntities.refFor(MealExpenseEntity.class, date.toString());
         return ref;
     }
@@ -43,7 +42,7 @@ public class MealExpenseServiceImpl implements MealExpenseService {
     @Override
     public ServiceCall<NotUsed, MealExpense, NotUsed> addExpense() {
         return (id, request) -> {
-            return friendEntityRef(request.date).ask(new MealExpenseCommand.CreateMealExpense(request))
+            return mealExpenseEntityRef(request.date).ask(new MealExpenseCommand.CreateMealExpense(request))
                     .thenApply(ack -> NotUsed.getInstance());
         };
     }
@@ -52,6 +51,19 @@ public class MealExpenseServiceImpl implements MealExpenseService {
     public ServiceCall<String, NotUsed, PSequence<String>> getMonthExpenses() {
         return (date, req) -> {
             CompletionStage<PSequence<String>> result = db.selectAll("SELECT * FROM meal_expense WHERE date <= ? AND date >= ?", date, date)
+                    .thenApply(rows -> {
+                        List<String> amounts = rows.stream().map(row -> row.getString("amount")).collect(Collectors.toList());
+                        return TreePVector.from(amounts);
+                    });
+            return result;
+        };
+    }
+
+
+    @Override
+    public ServiceCall<NotUsed, NotUsed, PSequence<String>> getAllExpenses() {
+        return () -> {
+            CompletionStage<PSequence<String>> result = db.selectAll("SELECT * FROM meal_expense2")
                     .thenApply(rows -> {
                         List<String> amounts = rows.stream().map(row -> row.getString("amount")).collect(Collectors.toList());
                         return TreePVector.from(amounts);
