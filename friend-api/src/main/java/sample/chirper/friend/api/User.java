@@ -3,18 +3,16 @@
  */
 package sample.chirper.friend.api;
 
-import java.util.Optional;
-
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-
-import org.pcollections.PSequence;
-import org.pcollections.TreePVector;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
+import org.pcollections.PSequence;
+import org.pcollections.TreePVector;
+
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+import java.util.Optional;
 
 @Immutable
 @JsonDeserialize

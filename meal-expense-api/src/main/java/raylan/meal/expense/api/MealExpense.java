@@ -4,25 +4,20 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
-import org.pcollections.PSequence;
-import org.pcollections.TreePVector;
-import play.api.i18n.I18nSupport;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.util.Optional;
 
 /**
  * Created by spetit on 29/03/2016.
  */
 @Immutable
 @JsonDeserialize
-public class MealExpense {
-    private Instant date;
-    private BigDecimal amount;
+public final class MealExpense {
+    public final Instant date;
+    public final BigDecimal amount;
 
 //    public MealExpense(Instant date, BigDecimal amount) {
 //        this.date = date;
